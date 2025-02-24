@@ -1,0 +1,71 @@
+/* styles.css */
+
+
+.pull-tab-right {
+    position: fixed;
+    top: 50%;
+    left: 100%;
+    transform: translateX(-100%);
+    background-color: #2a2a2e;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 1000;
+    /* corner styling, clockwise */
+    border-top-left-radius: 10px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 10px;
+}
+
+.pull-tab-left {
+    position: fixed; 
+    top: 50%;
+    left: 0%; 
+    transform:'';
+    background-color: #2a2a2e;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 1000;
+    /* corner styling, clockwise */
+    border-top-left-radius: 0px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 0px;
+}
+
+.context-button {
+    margin-bottom:5px;
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 24px;
+    height: 24px;
+}
+.hamburger-icon {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 20px;
+    height: 20px;
+}
+.back-icon{
+    margin-top:5px;
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 24px;
+    height: 24px;
+}
+
+.hamburger-icon span {
+    display: block;
+    height: 3px;
+    width: 100%;
+    /* background: linear-gradient(to left, #FFBC50,#E64DB7, #9159FE); */
+    background: #E2e2e2;
+    border-radius: 3px;
+}
+
+#content {
+    padding-top: 50px; /* Adjust this value based on the height of the pull tab */
+}

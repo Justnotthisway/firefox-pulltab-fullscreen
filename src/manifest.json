@@ -1,0 +1,31 @@
+{
+  "manifest_version": 2,
+  "name": "Pull Tab Fullscreen",
+  "version": "1.0",
+  "description": "A pull tab overlay on every website that lets you hide the taskbar. intended to save screenspace on mobile",
+  "permissions": [
+    "activeTab",
+    "tabs"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["pulltab.css"]
+    }
+  ],
+  "web_accessible_resources": [
+    "pulltab.html",
+    "pulltab.css"
+  ],
+  "browser_action": {
+    "default_popup": "default_popup.html",
+    "default_icon": {
+      "48": "icon-48.png"
+    }
+    
+  },
+  "icons": {
+    "48": "icon-48.png"
+  }
+}
