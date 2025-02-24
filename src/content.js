@@ -1,33 +1,43 @@
 // Load the pulltab.html file
 const pullTabUrl = browser.runtime.getURL("pulltab.html");
-var AddonSettings = {};
+// loadUserSettings();
+document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+// --- outsourced functions (for readability) ---
+
 //function to set current webpage in fullscreen
 function toggleFullscreen() {
   if (document.fullscreenElement)//returns true if Page is in fullscreen
   {
     document.exitFullscreen();
-    if (AddonSettings.autohide) {
-      document.getElementById('pull-tab').style.display = ""
-    }
   }
   else {
     document.documentElement.requestFullscreen();
-    if (AddonSettings.autohide) {
-      document.getElementById('pull-tab').style.display = "none"
-    }
   }
 }
-
+// function to hide the pulltab in fullscreen and make it reapear when leaving fullscreen
+function handleFullscreenChange() {
+  const pullTab = document.getElementById('pull-tab');
+  
+  if (document.fullscreenElement) {
+    // Entering fullscreen
+    pullTab.style.display = "none";
+  } else {
+    // Exiting fullscreen
+    pullTab.style.display = "flex"; // or "flex", depending on your layout
+  }
+}
+// function that opens the settings page
 function openSettings() {
   window.location.href = 'settings.html';
 }
 
 function showContextButtons()
 {
-  document.getElementById('save-button').style.display='flex';
+  // document.getElementById('save-button').style.display='flex';
   document.getElementById('fullscreen-icon').style.display='none';
   document.getElementById('back-button').style.display='flex';
-  document.getElementById('brightness-button').style.display='flex';
+  // document.getElementById('brightness-button').style.display='flex';
 }
 
 function hideContextButtons()
@@ -38,6 +48,61 @@ function hideContextButtons()
   document.getElementById('brightness-button').style.display='none';
 }
 
+function changeTheme()
+{
+
+}
+
+function saveCurrentSettings()
+{
+  const pullTab = document.getElementById('pull-tab')
+  let settingsData = {};
+  settingsData.height = pullTab.style.top;
+  settingsData.pinRight = (pullTab.className == 'pull-tab-right');
+  settingsData.darkTheme = true;
+
+    browser.storage.local.set(settingsData).then(() => {
+      console.log("Height:", settingsData.height);
+      console.log("Pin Right:", settingsData.pinRight);
+      console.log("Dark Theme:", settingsData.darkTheme);
+      console.log("Settings saved");
+    }).catch((error) => {
+        console.error("Error saving settings:", error);
+    });
+}
+
+function loadUserSettings() {
+  const pullTab = document.getElementById('pull-tab');
+  browser.storage.local.get(settingsData).then((result) => {
+      console.log("apply Height:", result.height);
+      console.log("apply Pin Right:", result.pinRight);
+      console.log("apply Dark Theme:", result.darkTheme);
+  }).catch((error) => {
+      console.error("Error retrieving settings:", error);
+  });
+  //apply right/left pinning
+  if(result.pinRight)
+  {
+    pullTab.classList.remove('pull-tab-left')
+    pullTab.classList.add('pull-tab-right');
+  }
+  else{
+    pullTab.classList.remove('pull-tab-right');
+    pullTab.classList.add('pull-tab-left')
+  }
+  //apply vertical positioning
+  pullTab.style.top = result.height;
+  //apply theme
+
+  // browser.storage.sync.get(data).then(data => {
+  //     Object.keys(data).forEach(key => {
+  //         const element = document.getElementById(key);
+  //         if (element) {
+  //             element.value = data[key];
+  //         }
+  //     });
+  // });
+}
 //main code starts here
 
 let isDragging = false;
@@ -46,7 +111,7 @@ let longPressTimer;
 let startX, startY;
 let pinLeft = false;
 
-
+// --- eventlistener functions ---
 function handlePointerDown(e) {
   const pullTab = document.getElementById('pull-tab');
   startX = e.clientX - pullTab.offsetLeft;
@@ -67,7 +132,6 @@ function handlePointerDown(e) {
     document.addEventListener('pointerup', handlePointerUp);
     // vibrate to let the user know of longpress interaction, also animation for same reason
     // navigator.vibrate(200);
-    pullTab.style.scale ='1.1';
   }, 500); // 500ms for long press
 }
 
@@ -98,16 +162,10 @@ function handlePointerUp(e) {
   pullTab.style.cursor = "grab";
   document.removeEventListener('pointermove', handlePointerMove);
   document.removeEventListener('pointerup', handlePointerUp);
-
-  pullTab.style.scale ='1';
-  
-
 }
 function handlePointerLeave(e) {
   if (!isDragging) {
     clearTimeout(longPressTimer);
-    
-    pullTab.style.scale ='1';
   }
 }
 function handlePointerEnter(e) {
@@ -125,8 +183,8 @@ function main() {
       console.log("Settings Form data, received in content script:", message.data);
       console.log(message.data.setting_autoHide === 'true' ? true : false);
 
-      AddonSettings.autohide = message.data.setting_autoHide === 'true' ? true : false;
-      console.log("value of autohide:", AddonSettings.autohide);
+      settingsData.autohide = message.data.setting_autoHide === 'true' ? true : false;
+      console.log("value of autohide:", settingsData.autohide);
       // Process the form data here as needed
     }
     if (message.action === "showPullTab") {
@@ -166,6 +224,9 @@ function main() {
 
     contextButtonBack.addEventListener('pointerup', () =>{
       hideContextButtons();
+    })
+    contextButtonSave.addEventListener('pointerup', () =>{
+      saveCurrentSettings();
     })
 
   })

@@ -15,6 +15,8 @@
     border-top-right-radius: 0px;
     border-bottom-right-radius: 0px;
     border-bottom-left-radius: 10px;
+    display:flex;
+    flex-direction: column;
 }
 
 .pull-tab-left {
@@ -31,8 +33,15 @@
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
     border-bottom-left-radius: 0px;
+    display:flex;
+    flex-direction: column;
 }
-
+.theme-dark{
+    background-color: #2a2a2e;
+}
+.theme-light{
+    background-color:#E2e2e2;
+}
 .context-button {
     margin-bottom:5px;
     display: none;

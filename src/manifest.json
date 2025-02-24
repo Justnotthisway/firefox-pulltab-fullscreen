@@ -5,7 +5,8 @@
   "description": "A pull tab overlay on every website that lets you hide the taskbar. intended to save screenspace on mobile",
   "permissions": [
     "activeTab",
-    "tabs"
+    "tabs",
+    "storage"
   ],
   "content_scripts": [
     {
