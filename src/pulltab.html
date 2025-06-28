@@ -1,15 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pull Tab Example</title>
-    <link rel="stylesheet" href="pulltab.css">
+    <!-- <link rel="stylesheet" href="pulltab.css"> -->
+    <link rel="stylesheet" href="__PULLTAB_CSS_URL__">
 </head>
+
 <body>
     <div id="pull-tab" class="pull-tab-right">
         <div id="save-button" class="context-button">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>save</title><path d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" fill="#e2e2e2"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <title>save</title>
+                <path
+                    d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z"
+                    fill="#e2e2e2" />
+            </svg>
         </div>
         <div id="fullscreen-icon" class="hamburger-icon">
             <span></span>
@@ -17,9 +25,25 @@
             <span></span>
         </div>
         <div id="back-button" class="context-button">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#e8eaed"><title>return</title><path d="M19,7V11H5.83L9.41,7.41L8,6L2,12L8,18L9.41,16.58L5.83,13H21V7H19Z" /></svg>        </div>
-        <div id="brightness-button" class="context-button" style="cursor: pointer;z-index: 1000; display:none">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#e8eaed"><title>brightness</title><path d="M12,18V6A6,6 0 0,1 18,12A6,6 0 0,1 12,18M20,15.31L23.31,12L20,8.69V4H15.31L12,0.69L8.69,4H4V8.69L0.69,12L4,15.31V20H8.69L12,23.31L15.31,20H20V15.31Z" /></svg></div>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#e8eaed">
+                <title>return</title>
+                <path d="M19,7V11H5.83L9.41,7.41L8,6L2,12L8,18L9.41,16.58L5.83,13H21V7H19Z" />
+            </svg>
         </div>
+        <div id="brightness-button" class="context-button" style="cursor: pointer;z-index: 1000; display:none">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#e8eaed">
+                <title>brightness</title>
+                <path
+                    d="M12,18V6A6,6 0 0,1 18,12A6,6 0 0,1 12,18M20,15.31L23.31,12L20,8.69V4H15.31L12,0.69L8.69,4H4V8.69L0.69,12L4,15.31V20H8.69L12,23.31L15.31,20H20V15.31Z" />
+            </svg>
+        </div>
+        <div id="swap-button" class="context-button">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#e8eaed">
+                <title>swap-horizontal</title>
+                <path d="M21,9L17,5V8H10V10H17V13M7,11L3,15L7,19V16H14V14H7V11Z" />
+            </svg>
+        </div>
+    </div>
 </body>
+
 </html>

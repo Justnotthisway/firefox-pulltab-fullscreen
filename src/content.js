@@ -1,5 +1,7 @@
 // Load the pulltab.html file
 const pullTabUrl = browser.runtime.getURL("pulltab.html");
+// IMPORTANT: Also get the absolute URL for your CSS file
+const pullTabCssUrl = browser.runtime.getURL("pulltab.css");
 // loadUserSettings();
 document.addEventListener("fullscreenchange", handleFullscreenChange);
 
@@ -15,10 +17,10 @@ function toggleFullscreen() {
     document.documentElement.requestFullscreen();
   }
 }
+
 // function to hide the pulltab in fullscreen and make it reapear when leaving fullscreen
 function handleFullscreenChange() {
   const pullTab = document.getElementById('pull-tab');
-  
   if (document.fullscreenElement) {
     // Entering fullscreen
     pullTab.style.display = "none";
@@ -27,66 +29,74 @@ function handleFullscreenChange() {
     pullTab.style.display = "flex"; // or "flex", depending on your layout
   }
 }
+
 // function that opens the settings page
 function openSettings() {
   window.location.href = 'settings.html';
 }
 
-function showContextButtons()
-{
+function showContextButtons() {
   // document.getElementById('save-button').style.display='flex';
-  document.getElementById('fullscreen-icon').style.display='none';
-  document.getElementById('back-button').style.display='flex';
+  document.getElementById('fullscreen-icon').style.display = 'none';
+  document.getElementById('back-button').style.display = 'flex';
+  document.getElementById('swap-button').style.display = 'flex';
   // document.getElementById('brightness-button').style.display='flex';
 }
 
-function hideContextButtons()
-{
-  document.getElementById('save-button').style.display='none';
-  document.getElementById('fullscreen-icon').style.display='flex';
-  document.getElementById('back-button').style.display='none';
-  document.getElementById('brightness-button').style.display='none';
+function hideContextButtons() {
+  // document.getElementById('save-button').style.display='none';
+  document.getElementById('fullscreen-icon').style.display = 'flex';
+  document.getElementById('back-button').style.display = 'none';
+  document.getElementById('swap-button').style.display = 'none';
+  // document.getElementById('brightness-button').style.display='none';
 }
 
-function changeTheme()
-{
+function swapSide() {
+  const pullTab = document.getElementById('pull-tab')
+
+  if (pullTab.classList.contains("pull-tab-right")) {
+    pullTab.className = "pull-tab-left";
+  }
+  else if (pullTab.classList.contains("pull-tab-left")) {
+    pullTab.className = "pull-tab-right";
+  }
+}
+function changeTheme() {
 
 }
 
-function saveCurrentSettings()
-{
+function saveCurrentSettings() {
   const pullTab = document.getElementById('pull-tab')
   let settingsData = {};
   settingsData.height = pullTab.style.top;
   settingsData.pinRight = (pullTab.className == 'pull-tab-right');
   settingsData.darkTheme = true;
 
-    browser.storage.local.set(settingsData).then(() => {
-      console.log("Height:", settingsData.height);
-      console.log("Pin Right:", settingsData.pinRight);
-      console.log("Dark Theme:", settingsData.darkTheme);
-      console.log("Settings saved");
-    }).catch((error) => {
-        console.error("Error saving settings:", error);
-    });
+  browser.storage.local.set(settingsData).then(() => {
+    console.log("Height:", settingsData.height);
+    console.log("Pin Right:", settingsData.pinRight);
+    console.log("Dark Theme:", settingsData.darkTheme);
+    console.log("Settings saved");
+  }).catch((error) => {
+    console.error("Error saving settings:", error);
+  });
 }
 
 function loadUserSettings() {
   const pullTab = document.getElementById('pull-tab');
   browser.storage.local.get(settingsData).then((result) => {
-      console.log("apply Height:", result.height);
-      console.log("apply Pin Right:", result.pinRight);
-      console.log("apply Dark Theme:", result.darkTheme);
+    console.log("apply Height:", result.height);
+    console.log("apply Pin Right:", result.pinRight);
+    console.log("apply Dark Theme:", result.darkTheme);
   }).catch((error) => {
-      console.error("Error retrieving settings:", error);
+    console.error("Error retrieving settings:", error);
   });
   //apply right/left pinning
-  if(result.pinRight)
-  {
+  if (result.pinRight) {
     pullTab.classList.remove('pull-tab-left')
     pullTab.classList.add('pull-tab-right');
   }
-  else{
+  else {
     pullTab.classList.remove('pull-tab-right');
     pullTab.classList.add('pull-tab-left')
   }
@@ -112,7 +122,7 @@ let startX, startY;
 let pinLeft = false;
 
 // --- eventlistener functions ---
-function handlePointerDown(e) {
+function handlePointerDown(e) {//fires when pulltab is pressed.
   const pullTab = document.getElementById('pull-tab');
   startX = e.clientX - pullTab.offsetLeft;
   startY = e.clientY - pullTab.offsetTop;
@@ -135,7 +145,7 @@ function handlePointerDown(e) {
   }, 500); // 500ms for long press
 }
 
-function handlePointerMove(e) {
+function handlePointerMove(e) {//fires when pulltab is longpressed, then moved
   const pullTab = document.getElementById('pull-tab');
   if (isDragging) {
     e.preventDefault();
@@ -143,37 +153,39 @@ function handlePointerMove(e) {
     let newY = e.clientY - startY;
     pullTab.style.top = `${newY}px`;
 
-    //put the pulltab on left edge
-    if (e.clientX < (screen.availWidth / 2)) {
-      pullTab.className = "pull-tab-left";
-    }
-    //put the pulltab on right edge (Standard Case)
-    if (e.clientX > (screen.availWidth / 2)) {
-      pullTab.className = "pull-tab-right";
-    }
+    // //put the pulltab on left edge
+    // if (e.clientX < (screen.availWidth / 2)) {
+    //   pullTab.className = "pull-tab-left";
+    // }
+    // //put the pulltab on right edge (Standard Case)
+    // if (e.clientX > (screen.availWidth / 2)) {
+    //   pullTab.className = "pull-tab-right";
+    // }
 
   }
 }
 
-function handlePointerUp(e) {
+function handlePointerUp(e) {//fires once pulltab is released
   const pullTab = document.getElementById('pull-tab');
   clearTimeout(longPressTimer);
   isDragging = false;
-  pullTab.style.cursor = "grab";
+  wasDragging = false;
+  pullTab.style.cursor = "default";
   document.removeEventListener('pointermove', handlePointerMove);
   document.removeEventListener('pointerup', handlePointerUp);
 }
-function handlePointerLeave(e) {
-  if (!isDragging) {
-    clearTimeout(longPressTimer);
-  }
-}
-function handlePointerEnter(e) {
-  if (isDragging) {
-    const pullTab = document.getElementById('pull-tab');
-    pullTab.style.cursor = "grabbing";
-  }
-}
+// function handlePointerLeave(e) {
+//   if (!isDragging) {
+//     clearTimeout(longPressTimer);
+//   }
+// }
+// function handlePointerEnter(e) {
+//   if (isDragging) {
+//     const pullTab = document.getElementById('pull-tab');
+//     pullTab.style.cursor = "grabbing";
+//   }
+// }
+
 
 // VOID MAIN - not necessary in js, just for some order
 function main() {
@@ -191,8 +203,10 @@ function main() {
       document.getElementById('pull-tab').style.display = "";
     }
   });
+  fetch(pullTabUrl).then(response => response.text()).then(html => {   //this line allows us to append our own js after the visited webpage
+    // IMPORTANT CHANGE: Replace the placeholder with the actual, absolute CSS URL
+    const modifiedHtml = html.replace('__PULLTAB_CSS_URL__', pullTabCssUrl);
 
-  fetch(pullTabUrl).then(response => response.text()).then(html => {
     // Create a container for the pull tab
     const container = document.createElement('div');
     container.innerHTML = html;
@@ -205,6 +219,7 @@ function main() {
     const contextButtonBack = document.getElementById('back-button');
     const contextButtonBrightness = document.getElementById('brightness-button');
     const contextButtonSave = document.getElementById('save-button');
+    const contextButtonSwap = document.getElementById('swap-button');
 
     fullscreenTab.addEventListener('click', () => {
       if (!wasDragging) {
@@ -214,20 +229,32 @@ function main() {
     });
 
     pullTab.addEventListener('pointerdown', handlePointerDown);
-    pullTab.addEventListener('pointerleave', handlePointerLeave);
-    pullTab.addEventListener('pointerenter', handlePointerEnter);
+    // pullTab.addEventListener('pointerleave', handlePointerLeave);
+    // pullTab.addEventListener('pointerenter', handlePointerEnter);
     pullTab.addEventListener('pointerup', () => {
       setTimeout(() => {
         wasDragging = false;
       }, 0);
     });
 
-    contextButtonBack.addEventListener('pointerup', () =>{
+    contextButtonBack.addEventListener('pointerdown', (e) => {
+      e.stopPropagation();
       hideContextButtons();
     })
-    contextButtonSave.addEventListener('pointerup', () =>{
+    contextButtonSave.addEventListener('pointerup', (e) => {
+      e.stopPropagation();
       saveCurrentSettings();
     })
+
+    contextButtonSwap.addEventListener('pointerdown', (e) => { 
+      e.stopPropagation(); // Stop propagation to pullTab
+      clearTimeout(longPressTimer); // Clear the timer immediat
+    });
+    contextButtonSwap.addEventListener('pointerup', (e) => {
+      e.stopPropagation();
+      swapSide();
+    })
+
 
   })
     .catch(error => {
