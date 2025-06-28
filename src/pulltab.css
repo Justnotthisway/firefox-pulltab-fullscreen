@@ -17,6 +17,8 @@
     border-bottom-left-radius: 10px;
     display:flex;
     flex-direction: column;
+    /* prevent scrolling behaviour while on the pulltab */
+    touch-action: none;
 }
 
 .pull-tab-left {
@@ -35,6 +37,8 @@
     border-bottom-left-radius: 0px;
     display:flex;
     flex-direction: column;
+    /* prevent scrolling behaviour while on the pulltab */
+    touch-action: none;
 }
 .theme-dark{
     background-color: #2a2a2e;

@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Pull Tab Fullscreen",
-  "version": "1.0",
+  "version": "2.0",
   "description": "A pull tab overlay on every website that lets you hide the taskbar. intended to save screenspace on mobile",
   "permissions": [
     "activeTab",

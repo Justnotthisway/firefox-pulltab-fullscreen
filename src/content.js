@@ -24,9 +24,29 @@ function handleFullscreenChange() {
   if (document.fullscreenElement) {
     // Entering fullscreen
     pullTab.style.display = "none";
+    pullTab.style.pointerEvents = "none";
+
+    // Reset drag state and explicitly disable dragging
+    isDragging = false;
+    wasDragging = false;
+    clearTimeout(longPressTimer);
+    document.removeEventListener('pointermove', handlePullTabPointerMove);
+    document.removeEventListener('pointerup', handlePullTabPointerUp);
+    canDrag = false;
+    // When entering fullscreen, ensure any previous "ignore" state is cleared
+    // ignorePullTabInputAfterFullscreen = false;
   } else {
     // Exiting fullscreen
     pullTab.style.display = "flex"; // or "flex", depending on your layout
+    canDrag = false;
+    // Set the flag to ignore pull tab input for a brief period
+    ignorePullTabInputAfterFullscreen = true;
+    setTimeout(() => {
+      ignorePullTabInputAfterFullscreen = false;
+      pullTab.style.pointerEvents = "auto";
+      hideContextButtons(); 
+      canDrag = true;
+    }, 550);
   }
 }
 
@@ -117,12 +137,22 @@ function loadUserSettings() {
 
 let isDragging = false;
 let wasDragging = false;
+
+let ignoreNextFullscreenClick = false; // necessary to prevent fullscreen being pressed after user exits contextmode/move-mode
+let ignorePullTabInputAfterFullscreen = false;
+let canDrag = true;
+
 let longPressTimer;
 let startX, startY;
 let pinLeft = false;
 
 // --- eventlistener functions ---
 function handlePointerDown(e) {//fires when pulltab is pressed.
+//will not do anything when we return from fullscreen via back-gesture
+  if (!canDrag) {
+    clearTimeout(longPressTimer); // Ensure any pending timer from a rapid tap is cleared
+    return;
+  }
   const pullTab = document.getElementById('pull-tab');
   startX = e.clientX - pullTab.offsetLeft;
   startY = e.clientY - pullTab.offsetTop;
@@ -138,8 +168,8 @@ function handlePointerDown(e) {//fires when pulltab is pressed.
     //show additional context buttons here, hide again in handlePointerUp()
     showContextButtons();
 
-    document.addEventListener('pointermove', handlePointerMove);
-    document.addEventListener('pointerup', handlePointerUp);
+    document.addEventListener('pointermove', handlePointerMove, { passive: false });
+    document.addEventListener('pointerup', handlePointerUp, { passive: false });
     // vibrate to let the user know of longpress interaction, also animation for same reason
     // navigator.vibrate(200);
   }, 500); // 500ms for long press
@@ -222,9 +252,15 @@ function main() {
     const contextButtonSwap = document.getElementById('swap-button');
 
     fullscreenTab.addEventListener('click', () => {
-      if (!wasDragging) {
-        toggleFullscreen();
+      if (wasDragging || ignoreNextFullscreenClick) {
+        e.preventDefault(); // Prevent the default click action (e.g., if there's an href)
+        e.stopImmediatePropagation(); // Stop any other click handlers on this element
+
+        // Reset the flag immediately after consuming the unwanted click
+        ignoreNextFullscreenClick = false;
+        return; // Exit the function, do not toggle fullscreen
       }
+      toggleFullscreen();
       wasDragging = false;
     });
 
@@ -240,13 +276,18 @@ function main() {
     contextButtonBack.addEventListener('pointerdown', (e) => {
       e.stopPropagation();
       hideContextButtons();
+
+      ignoreNextFullscreenClick = true; // Set flag to ignore the next click on fullscreen-icon
+      setTimeout(() => {
+        ignoreNextFullscreenClick = false;
+      }, 100);
     })
     contextButtonSave.addEventListener('pointerup', (e) => {
       e.stopPropagation();
       saveCurrentSettings();
     })
 
-    contextButtonSwap.addEventListener('pointerdown', (e) => { 
+    contextButtonSwap.addEventListener('pointerdown', (e) => {
       e.stopPropagation(); // Stop propagation to pullTab
       clearTimeout(longPressTimer); // Clear the timer immediat
     });
